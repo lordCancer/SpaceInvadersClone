@@ -24,44 +24,55 @@ bool GameScene::init()
 	this->addChild(label, 1);
 
 	player = new Player(this);
+	auto keyBoardListener = EventListenerKeyboard::create();
+	keyBoardListener->onKeyPressed = CC_CALLBACK_2(GameScene::keyPressed, this);
+	keyBoardListener->onKeyReleased = CC_CALLBACK_2(GameScene::keyReleased, this);
 
-	auto eventListener = EventListenerKeyboard::create();
-	
-	eventListener->onKeyPressed = [](EventKeyboard::KeyCode keyCode, Event* event) {
-
-		switch (keyCode) {
-		case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
-		case EventKeyboard::KeyCode::KEY_A:
-			log("Left Arrow");
-			break;
-		case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
-		case EventKeyboard::KeyCode::KEY_D:
-			log("Right Arrow");
-			break;
-		
-		}
-	};
-
-	this->_eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener,this);
+	this->_eventDispatcher->addEventListenerWithSceneGraphPriority(keyBoardListener,this);
 
 	this->scheduleUpdate();
 
 	return true;
 }
 
-bool GameScene::isKeyPressed(EventKeyboard::KeyCode code) 
+void GameScene::keyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 {
-	if (code == EventKeyboard::KeyCode::KEY_LEFT_ARROW)
-		return true;
-	return false;
+	switch (keyCode)
+	{
+	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
+		moveLeft = true;
+		break;
+	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
+		moveRight = true;
+	default:
+		break;
+	}
+}
+
+void GameScene::keyReleased(EventKeyboard::KeyCode keyCode, Event* event)
+{
+	switch (keyCode)
+	{
+	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
+		moveLeft = false;
+		break;
+	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
+		moveRight = false;
+	default:
+		break;
+	}
 }
 
 void GameScene::update(float delta)
 {
 	Node::update(delta);
 
-	if (isKeyPressed(EventKeyboard::KeyCode::KEY_LEFT_ARROW))
+	if (moveLeft)
 	{
 		player->moveLeft();
+	}
+	if (moveRight)
+	{
+		player->moveRight();
 	}
 }

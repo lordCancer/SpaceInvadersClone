@@ -16,5 +16,9 @@ private:
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	Sprite* playerSprite;
 	
+	void displayPlayerPosition();
+
+	void displayMoveLeftValue();
+	void displayMoverightValue();
 };
 
