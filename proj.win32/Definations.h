@@ -1,1 +1,2 @@
 #define PLAYER_SPEED 3
+#define BULLET_SPEED 10

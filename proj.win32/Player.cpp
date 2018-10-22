@@ -7,33 +7,39 @@ Player::Player(Layer *layer)
 	playerSprite->setContentSize(Size(35, 35));
 	playerSprite->setPosition(Vec2(visibleSize.height / 2  ,80));
 	layer->addChild(playerSprite, 5);
-	log("Initial Position of the player(%0.0f) ", playerSprite->getPosition().x);
+	/*log("Initial Position of the player(%0.0f) ", playerSprite->getPosition().x);
 	log("Initial Visible visible origin x (%0.0f)", origin.x);
-	log("Initial Visiblesize width (%0.0f)", visibleSize.width);
+	log("Initial Visiblesize width (%0.0f)", visibleSize.width);*/
 }
 
 void Player::moveLeft()
 {
 	if (playerSprite->getPosition().x > playerSprite->getContentSize().width )
 	{
-		displayMoveLeftValue();
+		//displayMoveLeftValue();
 		auto position = playerSprite->getPosition();
 		position.x -= PLAYER_SPEED;
 		playerSprite->setPosition(position);
 	}
-	displayPlayerPosition();
+	//displayPlayerPosition();
 }
 
 void Player::moveRight()
 {
 	if (playerSprite->getPosition().x < visibleSize.width- playerSprite->getPosition().x+ 250)
 	{
-		displayMoverightValue();
+		//displayMoverightValue();
 		auto position = playerSprite->getPosition();
 		position.x += PLAYER_SPEED;
 		playerSprite->setPosition(position);
 	}
-	displayPlayerPosition();
+	//displayPlayerPosition();
+}
+
+void Player::shoot(Layer *layer)
+{
+	Bullet *bullet = new Bullet(layer);
+	bullet->setPosition(playerSprite->getPosition());
 }
 
 void Player::displayPlayerPosition()

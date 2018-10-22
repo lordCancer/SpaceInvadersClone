@@ -24,6 +24,9 @@
     <ClCompile Include="Player.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Bullet.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -39,6 +42,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="Definations.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Bullet.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

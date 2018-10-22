@@ -2,6 +2,7 @@
 
 #include "cocos2d.h"
 #include"proj.win32\Player.h"
+#include "Bullet.h"
 
 class GameScene : public cocos2d::Layer
 {
@@ -13,11 +14,14 @@ public:
 	CREATE_FUNC(GameScene);
 
 private :
+	PhysicsWorld *physicsWorld;
 	Player * player;
 	bool moveLeft;
 	bool moveRight;
+	bool isShooting;
 
 	void keyPressed(EventKeyboard::KeyCode keyCode, Event* event);
 	void keyReleased(EventKeyboard::KeyCode keyCode, Event* event);
+	void setPhysicsWorld(PhysicsWorld *world);
 };
 
