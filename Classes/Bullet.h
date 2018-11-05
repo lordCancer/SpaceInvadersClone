@@ -2,17 +2,22 @@
 
 #include "cocos2d.h"
 #include"proj.win32\Definations.h"
-USING_NS_CC;
+#include <iostream>
 
-class Bullet
+USING_NS_CC;
+using namespace std;
+
+class Bullet : public Sprite
 {
 public:
-	Bullet(Layer *layer);
-	void moveUp();
-	void setPosition(Vec2 position);
+	static Bullet *create(string imgName);
+	bool initWithFile(const string& fileName);
+	void moveUp(float delta);
+	void enable();
+	void disable();
+	virtual void update(float delta);
+	~Bullet();
 
 private:
-	Size visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	Sprite* bulletSprite;	
+	bool isActive;
 };

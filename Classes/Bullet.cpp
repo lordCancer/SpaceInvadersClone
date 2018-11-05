@@ -1,21 +1,54 @@
 #include "Classes\Bullet.h"
 
-Bullet::Bullet(Layer *layer)
+Bullet* Bullet::create(string imgName)
 {
-	bulletSprite = Sprite::create("images/bullet.png");
-	bulletSprite->setAnchorPoint(Vec2(0.5f,0.5f));
-	bulletSprite->setScale(0.3f);
-	layer->addChild(bulletSprite, 5);
+	Bullet *b = new Bullet();
+
+	if (b && b->initWithFile(imgName))
+	{
+		b->autorelease();
+		return b;
+	}
+	CC_SAFE_DELETE(b);
+	return nullptr;
 }
 
-void Bullet::setPosition(Vec2 position)
+bool Bullet::initWithFile(const string& fileName)
 {
-	bulletSprite->setPosition(position);
+	if (!Sprite::initWithFile(fileName))
+		return false;
+	setAnchorPoint(Vec2(0.5f, 0.5f));
+	setScale(0.3f);
+	this->scheduleUpdate();
+	return true;
 }
 
-void Bullet::moveUp()
+
+void Bullet::moveUp(float delta)
 {
-	Vec2 pos = bulletSprite->getPosition();
-	pos.y += BULLET_SPEED;
-	bulletSprite->setPosition(pos);
+	Vec2 pos = this->getPosition();
+	pos.y += BULLET_SPEED * delta;
+	setPosition(pos);
+}
+
+void Bullet::update(float delta)
+{
+	if(isActive)
+		moveUp(delta);
+}
+
+void Bullet::enable()
+{
+	setVisible(true);
+	isActive = true;
+}
+
+void Bullet::disable()
+{
+	setVisible(false);
+	isActive = false;
+}
+
+Bullet::~Bullet()
+{
 }

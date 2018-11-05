@@ -25,14 +25,24 @@
 #pragma once
 
 #include "cocos2d.h"
+#include "proj.win32\Definations.h"
+
+USING_NS_CC;
 
 class  AppDelegate : private cocos2d::Application
 {
 public:
 	AppDelegate();
-	virtual ~AppDelegate();
-
 	virtual bool applicationDidFinishLaunching();
 	virtual void applicationDidEnterBackground();
 	virtual void applicationWillEnterForeground();
+
+	Vec2 getScreenSize();
+	Vec2 getScreenMid();
+
+	virtual ~AppDelegate();
+
+private:
+	Vec2 screenSize;
+	Vec2 screenMid;
 };

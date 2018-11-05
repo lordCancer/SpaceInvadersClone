@@ -3,24 +3,43 @@
 #include "cocos2d.h"
 #include "proj.win32\Definations.h"
 #include "Bullet.h"
-USING_NS_CC;
+#include <iostream>
 
-class Player 
+USING_NS_CC;
+using namespace std;
+
+class Player : public Sprite
 {
 public:
-	Player(Layer *layer);
-	void moveRight();
-	void moveLeft();
-	void shoot(Layer *layer);
+	static Player * create(string imgName);
+	bool initWithFile(const string& filename);
+	void moveRight(float delta);
+	void moveLeft(float delta);
+	//void createBullet(Layer *layer);
+	~Player();
 
 private:
-	Size visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	Sprite* playerSprite;
-	
-	void displayPlayerPosition();
-
-	void displayMoveLeftValue();
-	void displayMoverightValue();
+	Bullet * b;
 };
+
+//class Player 
+//{
+//public:
+//	Player(Layer *layer);
+//	void moveRight();
+//	void moveLeft();
+//	void shoot(Layer *layer);
+//
+//private:
+//	Size visibleSize = Director::getInstance()->getVisibleSize();
+//	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+//
+//	Sprite *playerSprite;  
+//	void displayPlayerPosition();
+//
+//	void displayMoveLeftValue();
+//	void displayMoverightValue();
+//};
+
+
 

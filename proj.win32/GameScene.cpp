@@ -22,12 +22,17 @@ bool GameScene::init()
 		return false;
 	}
 
-	auto label = Label::createWithSystemFont("SPACE INVADERS", "Arial",22);
-	label->setAnchorPoint(cocos2d::Vec2(0.5, 0.5));
-	label->setPosition(Vec2(100, 460));
+	auto label = Label::createWithSystemFont("SPACE INVADERS", "Arial",40);
+	//label->setAnchorPoint(cocos2d::Vec2(0.5, 0.5));
+	label->setPosition(SCREEN_SIZE.x * 0.5f, SCREEN_SIZE.y * 0.95f);
 	this->addChild(label, 1);
 
-	player = new Player(this);
+	//player = new Player(this);
+	player = Player::create("images/spaceship.png");
+	addChild(player, 5);
+	
+	initBullet();
+
 	auto keyBoardListener = EventListenerKeyboard::create();
 	keyBoardListener->onKeyPressed = CC_CALLBACK_2(GameScene::keyPressed, this);
 	keyBoardListener->onKeyReleased = CC_CALLBACK_2(GameScene::keyReleased, this);
@@ -49,12 +54,16 @@ void GameScene::keyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 	switch (keyCode)
 	{
 	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
+	case EventKeyboard::KeyCode::KEY_A:
 		moveLeft = true;
 		break;
 	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
+	case EventKeyboard::KeyCode::KEY_D:
 		moveRight = true;
+		break;
 	case EventKeyboard::KeyCode::KEY_SPACE:
 		isShooting = true;
+		break;
 	default:
 		break;
 	}
@@ -65,12 +74,16 @@ void GameScene::keyReleased(EventKeyboard::KeyCode keyCode, Event* event)
 	switch (keyCode)
 	{
 	case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
+	case EventKeyboard::KeyCode::KEY_A:
 		moveLeft = false;
 		break;
 	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
+	case EventKeyboard::KeyCode::KEY_D:
 		moveRight = false;
+		break;
 	case EventKeyboard::KeyCode::KEY_SPACE:
 		isShooting = false;
+		break;
 	default:
 		break;
 	}
@@ -82,16 +95,41 @@ void GameScene::update(float delta)
 
 	if (moveLeft)
 	{
-		player->moveLeft();
+		player->moveLeft(delta);
 	}
 	if (moveRight)
 	{
-		player->moveRight();
+		player->moveRight(delta);
 	}
 
 	//Bad way to shoot
 	if (isShooting)
 	{
-		player->shoot(this);
+		setBulletPosition();
+		bullet->enable();
 	}
+
+	if (bullet->getPosition().y > SCREEN_SIZE.y)
+	{
+		bullet->disable();
+		setBulletPosition();
+	}
+		
+}
+
+void GameScene::initBullet()
+{
+	if (bullet == NULL)
+	{
+		bullet = Bullet::create("images/bullet.png");
+		setBulletPosition();
+		bullet->disable();
+		addChild(bullet, 5);
+	}
+	
+}
+
+void GameScene::setBulletPosition()
+{
+	bullet->setPosition(player->getPosition());
 }

@@ -37,21 +37,39 @@ AppDelegate::~AppDelegate()
 
 bool AppDelegate::applicationDidFinishLaunching() {
 	auto director = Director::getInstance();
+
 	auto glview = director->getOpenGLView();
 	if (!glview) {
 		glview = GLViewImpl::create("Space Invaders");
-		glview->setFrameSize(640, 480);
+		glview->setDesignResolutionSize(DESIGN_RESOLUTION, ResolutionPolicy::SHOW_ALL);
+		glview->setFrameSize(DESIGN_RESOLUTION);
 		director->setOpenGLView(glview);
 	}
 
+	screenSize.x = Director::getInstance()->getVisibleSize().width;
+	screenSize.y = Director::getInstance()->getVisibleSize().height;
+	screenMid.x = screenSize.x / 2;
+	screenMid.y = screenSize.y / 2;
+
 	auto scene = GameScene::createScene();
 	director->runWithScene(scene);
-
 	return true;
 }
 
-void AppDelegate::applicationDidEnterBackground() {
+void AppDelegate::applicationDidEnterBackground() 
+{
 }
 
-void AppDelegate::applicationWillEnterForeground() {
+void AppDelegate::applicationWillEnterForeground() 
+{
+}
+
+Vec2 AppDelegate::getScreenSize()
+{
+	return screenSize;
+}
+
+Vec2 AppDelegate::getScreenMid()
+{
+	return screenMid;
 }
