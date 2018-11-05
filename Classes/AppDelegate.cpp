@@ -23,12 +23,12 @@
  ****************************************************************************/
 
 #include "AppDelegate.h"
-#include "proj.win32\GameScene.h"
+#include "GameScene.h"
 
 USING_NS_CC;
 
-AppDelegate::AppDelegate() {
-
+AppDelegate::AppDelegate() 
+{
 }
 
 AppDelegate::~AppDelegate()

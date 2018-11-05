@@ -25,7 +25,7 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "proj.win32\Definations.h"
+#include "Definations.h"
 
 USING_NS_CC;
 

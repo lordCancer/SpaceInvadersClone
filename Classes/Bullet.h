@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cocos2d.h"
-#include"proj.win32\Definations.h"
+#include"Definations.h"
 #include <iostream>
 
 USING_NS_CC;

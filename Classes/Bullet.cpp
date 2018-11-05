@@ -23,18 +23,17 @@ bool Bullet::initWithFile(const string& fileName)
 	return true;
 }
 
+void Bullet::update(float delta)
+{
+	if (isActive)
+		moveUp(delta);
+}
 
 void Bullet::moveUp(float delta)
 {
 	Vec2 pos = this->getPosition();
 	pos.y += BULLET_SPEED * delta;
 	setPosition(pos);
-}
-
-void Bullet::update(float delta)
-{
-	if(isActive)
-		moveUp(delta);
 }
 
 void Bullet::enable()

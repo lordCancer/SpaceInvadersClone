@@ -3,12 +3,12 @@ USING_NS_CC;
 
 Scene* GameScene::createScene()
 {
-	auto scene = Scene::createWithPhysics();
-	scene->getPhysicsWorld()->setDebugDrawMask(0xffff);
-	scene->getPhysicsWorld()->setGravity(Vect(0, 0));
+	auto scene = Scene::create();
+	//scene->getPhysicsWorld()->setDebugDrawMask(0xffff);
+	//scene->getPhysicsWorld()->setGravity(Vect(0, 0));
 
 	auto layer = GameScene::create();
-	layer->setPhysicsWorld(scene->getPhysicsWorld());
+	//layer->setPhysicsWorld(scene->getPhysicsWorld());
 
 	scene->addChild(layer);
 
@@ -27,11 +27,9 @@ bool GameScene::init()
 	label->setPosition(SCREEN_SIZE.x * 0.5f, SCREEN_SIZE.y * 0.95f);
 	this->addChild(label, 1);
 
-	//player = new Player(this);
-	player = Player::create("images/spaceship.png");
-	addChild(player, 5);
-	
+	initPlayer();
 	initBullet();
+	initEnemy();
 
 	auto keyBoardListener = EventListenerKeyboard::create();
 	keyBoardListener->onKeyPressed = CC_CALLBACK_2(GameScene::keyPressed, this);
@@ -44,10 +42,10 @@ bool GameScene::init()
 	return true;
 }
 
-void GameScene::setPhysicsWorld(PhysicsWorld *world)
-{
-	physicsWorld = world;
-}
+//void GameScene::setPhysicsWorld(PhysicsWorld *world)
+//{
+//	physicsWorld = world;
+//}
 
 void GameScene::keyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 {
@@ -93,28 +91,17 @@ void GameScene::update(float delta)
 {
 	Node::update(delta);
 
-	if (moveLeft)
-	{
-		player->moveLeft(delta);
-	}
-	if (moveRight)
-	{
-		player->moveRight(delta);
-	}
+	updateGamePlay(delta);
 
-	//Bad way to shoot
-	if (isShooting)
-	{
-		setBulletPosition();
-		bullet->enable();
-	}
+	checkCollisions();
+}
 
-	if (bullet->getPosition().y > SCREEN_SIZE.y)
-	{
-		bullet->disable();
-		setBulletPosition();
-	}
-		
+void GameScene::initPlayer()
+{
+	//player = new Player(this);
+	player = Player::create("images/spaceship.png");
+	addChild(player, 5);
+	playerCanShoot = true;
 }
 
 void GameScene::initBullet()
@@ -129,7 +116,53 @@ void GameScene::initBullet()
 	
 }
 
+void GameScene::initEnemy()
+{
+	enemy = Enemy::create("images/enemy.png");
+	enemy->setPosition(SCREEN_SIZE.x * 0.5f, SCREEN_SIZE.y * 0.8f);
+	addChild(enemy, 5);
+}
+
 void GameScene::setBulletPosition()
 {
 	bullet->setPosition(player->getPosition());
+}
+
+void GameScene::checkCollisions()
+{
+	auto rect = enemy->getBoundingBox();
+
+	if (rect.containsPoint(bullet->getPosition()))
+	{
+		bullet->disable();
+		playerCanShoot = true;
+	}
+}
+
+void GameScene::updateGamePlay(float dt)
+{
+	if (moveLeft)
+	{
+		player->moveLeft(dt);
+	}
+	if (moveRight)
+	{
+		player->moveRight(dt);
+	}
+
+	//We check if we are shooting and if playercanshoot is true
+	//so that we can shoot 1 bullet at a time
+	if (isShooting && playerCanShoot)
+	{
+		playerCanShoot = false;
+		setBulletPosition();
+		bullet->enable();
+	}
+
+	//If the bullet goes out of screen do this
+	if (bullet->getPosition().y > SCREEN_SIZE.y)
+	{
+		bullet->disable();
+		playerCanShoot = true;
+	}
 }
