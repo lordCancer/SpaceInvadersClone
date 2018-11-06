@@ -17,8 +17,7 @@ bool Bullet::initWithFile(const string& fileName)
 {
 	if (!Sprite::initWithFile(fileName))
 		return false;
-	setAnchorPoint(Vec2(0.5f, 0.5f));
-	setScale(0.3f);
+	setContentSize(Size(SCREEN_SIZE.x / 250, SCREEN_SIZE.y / 30));
 	this->scheduleUpdate();
 	return true;
 }

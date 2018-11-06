@@ -1,5 +1,4 @@
 #include "GameScene.h"
-USING_NS_CC;
 
 Scene* GameScene::createScene()
 {
@@ -21,21 +20,28 @@ bool GameScene::init()
 	{
 		return false;
 	}
+	Label *scoreLabel;
+	EventListenerKeyboard *keyboardListener;
+	visibleOrigin = Director::getInstance()->getVisibleOrigin();
+	scoreLabel = Label::createWithTTF("SCORE: ", "fonts/thin_pixel-7.ttf", 70);
+	scoreLabel->setPosition(SCREEN_SIZE.x * 0.1f, SCREEN_SIZE.y * 0.97f);
+	this->addChild(scoreLabel, 1);
 
-	auto label = Label::createWithSystemFont("SPACE INVADERS", "Arial",40);
-	//label->setAnchorPoint(cocos2d::Vec2(0.5, 0.5));
-	label->setPosition(SCREEN_SIZE.x * 0.5f, SCREEN_SIZE.y * 0.95f);
-	this->addChild(label, 1);
-
+	enemyMoveInterval = 0.5f;
+	isEnemyMoveDownPending = false;
+	isEnemyBelowPlayer = false;
+	enemyMoveElapsedTime = 0.0f;
+	enemyDeltaY = ENEMY_COLUMN_DISTANCE_VALUE;
+	
 	initPlayer();
 	initBullet();
-	initEnemy();
+	initEnemies();
 
-	auto keyBoardListener = EventListenerKeyboard::create();
-	keyBoardListener->onKeyPressed = CC_CALLBACK_2(GameScene::keyPressed, this);
-	keyBoardListener->onKeyReleased = CC_CALLBACK_2(GameScene::keyReleased, this);
+	keyboardListener = EventListenerKeyboard::create();
+	keyboardListener->onKeyPressed = CC_CALLBACK_2(GameScene::keyPressed, this);
+	keyboardListener->onKeyReleased = CC_CALLBACK_2(GameScene::keyReleased, this);
 
-	this->_eventDispatcher->addEventListenerWithSceneGraphPriority(keyBoardListener,this);
+	this->_eventDispatcher->addEventListenerWithSceneGraphPriority(keyboardListener,this);
 
 	this->scheduleUpdate();
 
@@ -93,15 +99,20 @@ void GameScene::update(float delta)
 
 	updateGamePlay(delta);
 
+	updateEnemies(delta);
+
 	checkCollisions();
 }
 
 void GameScene::initPlayer()
 {
-	//player = new Player(this);
-	player = Player::create("images/spaceship.png");
-	addChild(player, 5);
-	playerCanShoot = true;
+	if (player == NULL)
+	{
+		//player = new Player(this);
+		player = Player::create("images/spaceship.png");
+		addChild(player, 5);
+		playerCanShoot = true;
+	}
 }
 
 void GameScene::initBullet()
@@ -113,14 +124,26 @@ void GameScene::initBullet()
 		bullet->disable();
 		addChild(bullet, 5);
 	}
-	
 }
 
-void GameScene::initEnemy()
+void GameScene::initEnemies()
 {
-	enemy = Enemy::create("images/enemy.png");
-	enemy->setPosition(SCREEN_SIZE.x * 0.5f, SCREEN_SIZE.y * 0.8f);
-	addChild(enemy, 5);
+	float rowDistance = ENEMY_ROW_DITANCE_VALUE;
+	float columnDistance = ENEMY_COLUMN_DISTANCE_VALUE;
+
+	for (int i = 0; i < ENEMY_ROW_COUNT; i++)
+	{
+		for (int j = 0; j < ENEMY_COLUMN_COUNT; j++)
+		{
+			Enemy *e = Enemy::create("images/enemy.png");
+			e->setPosition(SCREEN_SIZE.x *  rowDistance, SCREEN_SIZE.y * columnDistance);
+			addChild(e, 5);
+			enemies[i][j] = e;
+			rowDistance += 0.08;
+		}
+		columnDistance -= 0.08f;
+		rowDistance = ENEMY_ROW_DITANCE_VALUE;
+	}
 }
 
 void GameScene::setBulletPosition()
@@ -129,13 +152,25 @@ void GameScene::setBulletPosition()
 }
 
 void GameScene::checkCollisions()
-{
-	auto rect = enemy->getBoundingBox();
-
-	if (rect.containsPoint(bullet->getPosition()))
+{	
+	//Checks if the player bullet is colliding with an enemy
+	for (int i = 0; i < ENEMY_ROW_COUNT; i++)
 	{
-		bullet->disable();
-		playerCanShoot = true;
+		for (int j = 0; j < ENEMY_COLUMN_COUNT; j++)
+		{
+			Rect r = enemies[i][j]->getBoundingBox();
+			if (enemies[i][j]->alive() && r.intersectsRect(bullet->getBoundingBox()))
+			{
+				enemies[i][j]->disable();
+				bullet->disable();
+				playerCanShoot = true;
+			}
+			/*if (r.containsPoint(bullet->getPosition()))
+			{
+				bullet->disable();
+				playerCanShoot = true;
+			}*/
+		}
 	}
 }
 
@@ -151,11 +186,11 @@ void GameScene::updateGamePlay(float dt)
 	}
 
 	//We check if we are shooting and if playercanshoot is true
-	//so that we can shoot 1 bullet at a time
+	//so that we shoot 1 bullet at a time
 	if (isShooting && playerCanShoot)
 	{
 		playerCanShoot = false;
-		setBulletPosition();
+		setBulletPosition();//we set the bullet positions to players position before we fire the bullet
 		bullet->enable();
 	}
 
@@ -165,4 +200,82 @@ void GameScene::updateGamePlay(float dt)
 		bullet->disable();
 		playerCanShoot = true;
 	}
+}
+
+void GameScene::updateEnemies(float dt)
+{
+	enemyMoveElapsedTime += dt;
+
+	if (enemyMoveElapsedTime >= enemyMoveInterval)
+	{
+		for (int i = 0; i < ENEMY_ROW_COUNT; i++)
+		{
+			for (int j = 0; j < ENEMY_COLUMN_COUNT; j++)
+			{
+
+				enemies[i][j]->setPositionY(enemies[i][j]->getPositionY() - ENEMY_COLUMN_DISTANCE_VALUE);
+				if (enemies[i][j]->getPositionY() < player->getPositionY())
+				{
+					isEnemyBelowPlayer = true;
+				}
+			}
+		}
+		enemyMoveElapsedTime -= enemyMoveInterval;
+	}
+	
+	/*enemyMoveInterval += dt;
+
+	if (enemyMoveElapsedTime >= enemyMoveInterval)
+	{
+		Enemy * rightMostEnemy = nullptr;
+		Enemy * leftMostEnemy = nullptr;
+
+		if (isEnemyMoveDownPending)
+		{
+			for (int i = 0; i < ENEMY_ROW_COUNT; i++)
+			{
+				for (int j = 0; j < ENEMY_COLUMN_COUNT; j++)
+				{
+					auto e = enemies[i][j];
+
+					if (e->alive())
+						continue;
+
+					e->setPositionY(e->getPositionY() - ENEMY_COLUMN_DISTANCE_VALUE );
+
+					if (e->getPositionY() < player->getPositionY())
+					{
+						isEnemyBelowPlayer = true;
+					}
+				}
+			}
+			isEnemyMoveDownPending = false;
+		}
+		else
+		{
+			for (int i = 0; i < ENEMY_ROW_COUNT; i++)
+			{
+				for (int j = 0; j < ENEMY_COLUMN_COUNT; j++)
+				{
+					auto e = enemies[i][j];
+
+					if (e->alive())
+						continue;
+
+					e->setPositionX(e->getPositionX() - ENEMY_ROW_DITANCE_VALUE);
+
+					rightMostEnemy = e;
+					if (!leftMostEnemy)
+						leftMostEnemy = e;
+				}
+			}
+			if (std::ceil(rightMostEnemy->getPositionX() + rightMostEnemy->getContentSize().width / 2) >= visibleOrigin.x + SCREEN_SIZE.x ||
+				std::floor(leftMostEnemy->getPositionX() - leftMostEnemy->getContentSize().width / 2) <= visibleOrigin.x)
+			{
+				enemyDeltaX *= -1;
+				isEnemyMoveDownPending = true;
+			}
+		}
+		enemyMoveElapsedTime -= enemyMoveInterval;
+	}*/
 }

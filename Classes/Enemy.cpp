@@ -18,9 +18,26 @@ bool Enemy::initWithFile(const string& fileName)
 {
 	if (!Sprite::initWithFile(fileName))
 		return false;
-
-	setContentSize(Size(SCREEN_SIZE.x / 10, SCREEN_SIZE.y / 10));
+	isActive = true;
+	setContentSize(Size(SCREEN_SIZE.x / 15, SCREEN_SIZE.y / 15));
 	return true;
+}
+
+void Enemy::enable()
+{
+	setVisible(true);
+	isActive = true;
+}
+
+void Enemy::disable()
+{
+	setVisible(false);
+	isActive = false;
+}
+
+bool Enemy::alive()
+{
+	return isActive;
 }
 
 Enemy::~Enemy()

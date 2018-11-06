@@ -5,6 +5,9 @@
 #include "Bullet.h"
 #include "Enemy.h"
 
+USING_NS_CC;
+using namespace std;
+
 class GameScene : public cocos2d::Layer
 {
 public:
@@ -12,13 +15,13 @@ public:
 	virtual bool init();
 	virtual void update(float delta) override;
 	CREATE_FUNC(GameScene);
-	void checkCollisions();
+	
 
 private :
 	//PhysicsWorld *physicsWorld;
 	Player * player;
 	Bullet * bullet;
-	Enemy *enemy;
+	Enemy *enemies[ENEMY_ROW_COUNT][ENEMY_COLUMN_COUNT];
 	
 	//Player control related variables
 	bool moveLeft;
@@ -26,12 +29,24 @@ private :
 	bool isShooting;
 	bool playerCanShoot;
 
+	//enemy control related variables
+	float enemyMoveElapsedTime;
+	float enemyMoveInterval;
+	bool isEnemyBelowPlayer;
+	bool isEnemyMoveDownPending;
+	float enemyDeltaY;
+	float enemyDeltaX;
+	Point visibleOrigin;
+
+	//functions that initializes the elements of the Game scene 
 	void initPlayer();
 	void initBullet();
 	void setBulletPosition();
-	void initEnemy();
+	void initEnemies();
 
 	void updateGamePlay(float dt);
+	void checkCollisions();
+	void updateEnemies(float dt);
 
 	void keyPressed(EventKeyboard::KeyCode keyCode, Event* event);
 	void keyReleased(EventKeyboard::KeyCode keyCode, Event* event);

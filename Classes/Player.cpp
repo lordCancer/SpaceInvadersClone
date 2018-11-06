@@ -20,8 +20,8 @@ bool Player::initWithFile(const string& filename)
 		return false;
 
 	setAnchorPoint(Vec2(0.5f, 0.5f));
-	setContentSize(Size(SCREEN_SIZE.x/16, SCREEN_SIZE.y/16));
-	setPosition(Vec2(SCREEN_SIZE.x * 0.5f, SCREEN_SIZE.y * 0.15f ));
+	setContentSize(Size(SCREEN_SIZE.x/18, SCREEN_SIZE.y/18));
+	setPosition(Vec2(SCREEN_SIZE.x * 0.5f, SCREEN_SIZE.y * 0.1f ));
 	
 	return true;
 }
@@ -47,6 +47,10 @@ void Player::moveRight(float delta)
 	}
 }
 
+Player::~Player()
+{
+}
+
 //void Player::createBullet(Layer *layer)
 //{
 //	if (b != NULL)
@@ -55,10 +59,6 @@ void Player::moveRight(float delta)
 //	b->setPosition(this->getPosition());
 //	layer->addChild(b, 5);
 //}
-
-Player::~Player()
-{
-}
 
 //Player::Player(Layer *layer)
 //{

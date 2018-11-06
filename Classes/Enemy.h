@@ -12,8 +12,13 @@ class Enemy : public Sprite
 public:
 	static Enemy* create(string imgName);
 	bool initWithFile(const string& fileName);
+
+	void enable();
+	void disable();
+	bool alive();
+
 	~Enemy();
 
 private:
-
+	bool isActive;
 };
