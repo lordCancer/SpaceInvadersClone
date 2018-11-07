@@ -18,11 +18,14 @@ public:
 	
 
 private :
-	//PhysicsWorld *physicsWorld;
 	Player * player;
 	Bullet * bullet;
 	Enemy *enemies[ENEMY_ROW_COUNT][ENEMY_COLUMN_COUNT];
-	
+	Bullet *enemybullet;
+	int score;
+	Label *scoreLabel;
+	Label *livesLabel;
+
 	//Player control related variables
 	bool moveLeft;
 	bool moveRight;
@@ -34,19 +37,21 @@ private :
 	float enemyMoveInterval;
 	bool isEnemyBelowPlayer;
 	bool isEnemyMoveDownPending;
-	Point visibleOrigin;
 	float deltaX;
 	float deltaY;
 
-	//functions that initializes the elements of the Game scene 
+	//Game scene functions
 	void initPlayer();
 	void initBullet();
-	void setBulletPosition();
+	void setPlayerBulletPosition();
 	void initEnemies();
-
+	void initEnemyBullet();
 	void updateGamePlay(float dt);
 	void checkCollisions();
 	void updateEnemies(float dt);
+	void setEnemyBulletPosition();
+	void updateScoreText();
+	void updateLivesText();
 
 	void keyPressed(EventKeyboard::KeyCode keyCode, Event* event);
 	void keyReleased(EventKeyboard::KeyCode keyCode, Event* event);

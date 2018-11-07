@@ -18,9 +18,11 @@ public:
 	//void createBullet(Layer *layer);
 	~Player();
 	void dead();
+	int getLives();
+	void setLives(int lives);
 
 private:
-	Bullet * b;
+	int currentLives;
 };
 
 //class Player 

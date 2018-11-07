@@ -3,11 +3,7 @@
 Scene* GameScene::createScene()
 {
 	auto scene = Scene::create();
-	//scene->getPhysicsWorld()->setDebugDrawMask(0xffff);
-	//scene->getPhysicsWorld()->setGravity(Vect(0, 0));
-
 	auto layer = GameScene::create();
-	//layer->setPhysicsWorld(scene->getPhysicsWorld());
 
 	scene->addChild(layer);
 
@@ -20,16 +16,20 @@ bool GameScene::init()
 	{
 		return false;
 	}
-	Label *scoreLabel;
 	EventListenerKeyboard *keyboardListener;
-	visibleOrigin = Director::getInstance()->getVisibleOrigin();
-	scoreLabel = Label::createWithTTF("SCORE: ", "fonts/thin_pixel-7.ttf", 70);
-	scoreLabel->setPosition(SCREEN_SIZE.x * 0.1f, SCREEN_SIZE.y * 0.97f);
-	this->addChild(scoreLabel, 1);
 
 	initPlayer();
 	initBullet();
 	initEnemies();
+
+	score = 0;
+	scoreLabel = Label::createWithTTF("SCORE: 00", "fonts/thin_pixel-7.ttf", 70);
+	scoreLabel->setPosition(SCREEN_SIZE.x * 0.12f, SCREEN_SIZE.y * 0.97f);
+	this->addChild(scoreLabel, 1);
+
+	livesLabel = Label::createWithTTF("LIVES x " + to_string(player->getLives()), "fonts/thin_pixel-7.ttf", 70);
+	livesLabel->setPosition(SCREEN_SIZE.x * 0.86f, SCREEN_SIZE.y * 0.97f);
+	this->addChild(livesLabel, 1);
 
 	keyboardListener = EventListenerKeyboard::create();
 	keyboardListener->onKeyPressed = CC_CALLBACK_2(GameScene::keyPressed, this);
@@ -114,7 +114,7 @@ void GameScene::initBullet()
 	if (bullet == NULL)
 	{
 		bullet = Bullet::create("images/bullet.png");
-		setBulletPosition();
+		setPlayerBulletPosition();
 		bullet->disable();
 		addChild(bullet, 5);
 	}
@@ -146,9 +146,11 @@ void GameScene::initEnemies()
 		columnDistance -= 0.08f;
 		rowDistance = ENEMY_ROW_DITANCE_VALUE;
 	}
+
+	initEnemyBullet();
 }
 
-void GameScene::setBulletPosition()
+void GameScene::setPlayerBulletPosition()
 {
 	bullet->setPosition(player->getPosition());
 }
@@ -164,6 +166,7 @@ void GameScene::checkCollisions()
 			if (enemies[i][j]->alive() && r.intersectsRect(bullet->getBoundingBox()))
 			{
 				enemies[i][j]->disable();
+				updateScoreText();
 				bullet->disable();
 				playerCanShoot = true;
 			}
@@ -172,6 +175,18 @@ void GameScene::checkCollisions()
 				bullet->disable();
 				playerCanShoot = true;
 			}*/
+		}
+	}
+	
+	//enemy bullet and player collision
+	Rect r = player->getBoundingBox();
+	if (r.intersectsRect(enemybullet->getBoundingBox()))
+	{
+		setEnemyBulletPosition();
+		updateLivesText();
+		if (player->getLives() <= 0)
+		{
+			log("GAME OVER!!");
 		}
 	}
 }
@@ -192,7 +207,7 @@ void GameScene::updateGamePlay(float dt)
 	if (isShooting && playerCanShoot)
 	{
 		playerCanShoot = false;
-		setBulletPosition();//we set the bullet positions to players position before we fire the bullet
+		setPlayerBulletPosition();//we set the bullet positions to players position before we fire the bullet
 		bullet->enable();
 	}
 
@@ -201,6 +216,12 @@ void GameScene::updateGamePlay(float dt)
 	{
 		bullet->disable();
 		playerCanShoot = true;
+	}
+
+	//If enemy bullet goes out of screen do this
+	if (enemybullet->getPosition().y < SCREEN_SIZE.y * 0.01)
+	{
+		setEnemyBulletPosition();
 	}
 }
 
@@ -223,7 +244,7 @@ void GameScene::updateEnemies(float dt)
 
 					if (enemies[i][j]->getPositionY() < player->getPositionY())
 					{
-						isEnemyBelowPlayer = true;
+						isEnemyBelowPlayer = true; //Game Over
 					}
 				}
 			}
@@ -235,7 +256,7 @@ void GameScene::updateEnemies(float dt)
 			{
 				for (int j = 0; j < ENEMY_COLUMN_COUNT; j++)
 				{
-					//Move all the enemies left or right until they reach the screen limit on both x and y
+					//Move all the enemies left or right until they reach the screen limit on both endpoints of x
 					enemies[i][j]->setPositionX(enemies[i][j]->getPositionX() + deltaX);
 					if (i == 0 && j == 0)
 					{
@@ -253,7 +274,7 @@ void GameScene::updateEnemies(float dt)
 
 				}
 			}
-			if (rightMostEnemy->getPosition().x  > SCREEN_SIZE.x * 0.95f || leftMostEnemy->getPosition().x < SCREEN_SIZE.x *0.05f)
+			if (rightMostEnemy->getPosition().x  > SCREEN_SIZE.x * 0.95f || leftMostEnemy->getPosition().x < SCREEN_SIZE.x * 0.05f)
 			{
 				deltaX *= -1;
 				isEnemyMoveDownPending = true;
@@ -261,4 +282,37 @@ void GameScene::updateEnemies(float dt)
 		}
 		enemyMoveElapsedTime -= enemyMoveInterval;
 	}
+}
+
+void GameScene::initEnemyBullet()
+{
+	enemybullet = Bullet::create("images/bullet.png");
+	enemybullet->setIsEnemyBullet(true);
+	enemybullet->setColor(ccc3(255, 215, 0));//gold color
+	addChild(enemybullet, 5);
+	setEnemyBulletPosition();
+	enemybullet->enable();
+}
+
+void GameScene::setEnemyBulletPosition() //sets the bullet positon to a random enemy
+{
+	int randomRowNum = RandomHelper::random_int(0, 4);
+	int randomColumnNum = RandomHelper::random_int(0, 10);
+
+	if (!enemies[randomRowNum][randomColumnNum]->alive())
+		return;
+
+	enemybullet->setPosition(enemies[randomRowNum][randomColumnNum]->getPosition());
+}
+
+void GameScene::updateScoreText()
+{
+	score += ENEMY_SCORE_VALUE;
+	scoreLabel->setString("SCORE: " + to_string(score));
+}
+
+void GameScene::updateLivesText()
+{
+	player->setLives(player->getLives() - 1);
+	livesLabel->setString("LIVES x " + to_string(player->getLives()));
 }

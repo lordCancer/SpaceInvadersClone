@@ -18,7 +18,7 @@ bool Player::initWithFile(const string& filename)
 {
 	if (!Sprite::initWithFile(filename))
 		return false;
-
+	currentLives = PLAYER_MAX_LIVES;
 	setAnchorPoint(Vec2(0.5f, 0.5f));
 	setContentSize(Size(SCREEN_SIZE.x/18, SCREEN_SIZE.y/18));
 	setPosition(Vec2(SCREEN_SIZE.x * 0.5f, SCREEN_SIZE.y * 0.1f ));
@@ -50,6 +50,16 @@ void Player::moveRight(float delta)
 void Player::dead()
 {
 
+}
+
+int Player::getLives()
+{
+	return currentLives;
+}
+
+void Player::setLives(int lives)
+{
+	currentLives = lives;
 }
 
 Player::~Player()

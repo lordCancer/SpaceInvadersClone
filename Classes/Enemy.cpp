@@ -20,6 +20,7 @@ bool Enemy::initWithFile(const string& fileName)
 		return false;
 	isActive = true;
 	setContentSize(Size(SCREEN_SIZE.x / 15, SCREEN_SIZE.y / 15));
+	
 	return true;
 }
 
