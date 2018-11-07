@@ -47,6 +47,11 @@ void Player::moveRight(float delta)
 	}
 }
 
+void Player::dead()
+{
+
+}
+
 Player::~Player()
 {
 }

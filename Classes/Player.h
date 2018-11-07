@@ -17,6 +17,7 @@ public:
 	void moveLeft(float delta);
 	//void createBullet(Layer *layer);
 	~Player();
+	void dead();
 
 private:
 	Bullet * b;

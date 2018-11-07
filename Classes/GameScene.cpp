@@ -27,12 +27,6 @@ bool GameScene::init()
 	scoreLabel->setPosition(SCREEN_SIZE.x * 0.1f, SCREEN_SIZE.y * 0.97f);
 	this->addChild(scoreLabel, 1);
 
-	enemyMoveInterval = 0.5f;
-	isEnemyMoveDownPending = false;
-	isEnemyBelowPlayer = false;
-	enemyMoveElapsedTime = 0.0f;
-	enemyDeltaY = ENEMY_COLUMN_DISTANCE_VALUE;
-	
 	initPlayer();
 	initBullet();
 	initEnemies();
@@ -128,6 +122,14 @@ void GameScene::initBullet()
 
 void GameScene::initEnemies()
 {
+	//initializing all the variables needed to control enemies
+	enemyMoveInterval = ENEMY_MOVE_INTERVAL;
+	isEnemyMoveDownPending = false;
+	isEnemyBelowPlayer = false;
+	enemyMoveElapsedTime = ENEMY_MOVE_ELAPSED_TIME;
+	deltaX = ENEMY_DELTA_X;
+	deltaY = ENEMY_DELTA_Y;
+
 	float rowDistance = ENEMY_ROW_DITANCE_VALUE;
 	float columnDistance = ENEMY_COLUMN_DISTANCE_VALUE;
 
@@ -208,27 +210,8 @@ void GameScene::updateEnemies(float dt)
 
 	if (enemyMoveElapsedTime >= enemyMoveInterval)
 	{
-		for (int i = 0; i < ENEMY_ROW_COUNT; i++)
-		{
-			for (int j = 0; j < ENEMY_COLUMN_COUNT; j++)
-			{
-
-				enemies[i][j]->setPositionY(enemies[i][j]->getPositionY() - ENEMY_COLUMN_DISTANCE_VALUE);
-				if (enemies[i][j]->getPositionY() < player->getPositionY())
-				{
-					isEnemyBelowPlayer = true;
-				}
-			}
-		}
-		enemyMoveElapsedTime -= enemyMoveInterval;
-	}
-	
-	/*enemyMoveInterval += dt;
-
-	if (enemyMoveElapsedTime >= enemyMoveInterval)
-	{
-		Enemy * rightMostEnemy = nullptr;
-		Enemy * leftMostEnemy = nullptr;
+		Enemy *rightMostEnemy = nullptr;
+		Enemy *leftMostEnemy = nullptr;
 
 		if (isEnemyMoveDownPending)
 		{
@@ -236,14 +219,9 @@ void GameScene::updateEnemies(float dt)
 			{
 				for (int j = 0; j < ENEMY_COLUMN_COUNT; j++)
 				{
-					auto e = enemies[i][j];
+					enemies[i][j]->setPositionY(enemies[i][j]->getPositionY() - deltaY);
 
-					if (e->alive())
-						continue;
-
-					e->setPositionY(e->getPositionY() - ENEMY_COLUMN_DISTANCE_VALUE );
-
-					if (e->getPositionY() < player->getPositionY())
+					if (enemies[i][j]->getPositionY() < player->getPositionY())
 					{
 						isEnemyBelowPlayer = true;
 					}
@@ -257,25 +235,30 @@ void GameScene::updateEnemies(float dt)
 			{
 				for (int j = 0; j < ENEMY_COLUMN_COUNT; j++)
 				{
-					auto e = enemies[i][j];
+					//Move all the enemies left or right until they reach the screen limit on both x and y
+					enemies[i][j]->setPositionX(enemies[i][j]->getPositionX() + deltaX);
+					if (i == 0 && j == 0)
+					{
+						if (leftMostEnemy != NULL)
+							return;
+						leftMostEnemy = enemies[i][j];
+					}
 
-					if (e->alive())
-						continue;
+					if (i == 0 && j == 10)
+					{
+						if (rightMostEnemy != NULL)
+							return;
+						rightMostEnemy = enemies[i][j];
+					}
 
-					e->setPositionX(e->getPositionX() - ENEMY_ROW_DITANCE_VALUE);
-
-					rightMostEnemy = e;
-					if (!leftMostEnemy)
-						leftMostEnemy = e;
 				}
 			}
-			if (std::ceil(rightMostEnemy->getPositionX() + rightMostEnemy->getContentSize().width / 2) >= visibleOrigin.x + SCREEN_SIZE.x ||
-				std::floor(leftMostEnemy->getPositionX() - leftMostEnemy->getContentSize().width / 2) <= visibleOrigin.x)
+			if (rightMostEnemy->getPosition().x  > SCREEN_SIZE.x * 0.95f || leftMostEnemy->getPosition().x < SCREEN_SIZE.x *0.05f)
 			{
-				enemyDeltaX *= -1;
+				deltaX *= -1;
 				isEnemyMoveDownPending = true;
 			}
 		}
 		enemyMoveElapsedTime -= enemyMoveInterval;
-	}*/
+	}
 }

@@ -34,9 +34,9 @@ private :
 	float enemyMoveInterval;
 	bool isEnemyBelowPlayer;
 	bool isEnemyMoveDownPending;
-	float enemyDeltaY;
-	float enemyDeltaX;
 	Point visibleOrigin;
+	float deltaX;
+	float deltaY;
 
 	//functions that initializes the elements of the Game scene 
 	void initPlayer();
