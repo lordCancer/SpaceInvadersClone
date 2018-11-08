@@ -17,7 +17,7 @@ bool Bullet::initWithFile(const string& fileName)
 {
 	if (!Sprite::initWithFile(fileName))
 		return false;
-	setContentSize(Size(SCREEN_SIZE.x / 250, SCREEN_SIZE.y / 30));
+	setContentSize(Size(SCREEN_SIZE.x / 150, SCREEN_SIZE.y / 30));
 	isEnemyBullet = false;
 	this->scheduleUpdate();
 	return true;
