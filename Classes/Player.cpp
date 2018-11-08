@@ -46,9 +46,42 @@ void Player::moveRight(float delta)
 	}
 }
 
-void Player::dead()
+void Player::explode()
 {
+	ParticleExplosion * e = ParticleExplosion::create();
 
+	e->setDuration(1.5f);
+	e->setEmitterMode(ParticleSystem::Mode::RADIUS);
+
+	e->setColor(Color3B(226, 88, 34));
+	e->setStartRadius(65.0f);
+	e->setEmissionRate(500);
+	e->setAngle(0.0f);
+	e->setAngleVar(360.0f);
+	//e->setLife(0.3f);
+	//e->setLifeVar(0.1f);
+	e->setPosition(this->getPosition());
+	e->setAutoRemoveOnFinish(true);
+	getParent()->addChild(e, 10);
+}
+
+void Player::smallExplosion()
+{
+	ParticleExplosion * e = ParticleExplosion::create();
+
+	e->setDuration(0.2f);
+	e->setEmitterMode(ParticleSystem::Mode::RADIUS);
+
+	e->setColor(Color3B(226, 88, 34));
+	e->setStartRadius(30.0f);
+	e->setEmissionRate(500);
+	e->setAngle(0.0f);
+	e->setAngleVar(360.0f);
+	e->setLife(0.3f);
+	e->setLifeVar(0.1f);
+	e->setPosition(this->getPosition());
+	e->setAutoRemoveOnFinish(true);
+	getParent()->addChild(e, 10);
 }
 
 int Player::getLives()

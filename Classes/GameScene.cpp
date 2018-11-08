@@ -203,10 +203,12 @@ void GameScene::checkCollisions()
 	if (r.intersectsRect(enemybullet->getBoundingBox()))
 	{
 		setEnemyBulletPosition();
+		player->smallExplosion();
 		playPlayerExplosionSFX();
 		updateLivesText();
 		if (player->getLives() <= 0)
 		{
+			player->explode();
 			player->setVisible(false);
 			log("GAME OVER!!");
 			PlayGameOverSFX();
@@ -218,7 +220,7 @@ void GameScene::checkCollisions()
 	for (int i = 0; i < (int)shields.size(); i++)
 	{
 		Rect r = shields[i]->getBoundingBox();
-		//Collision with enemy bullet
+		//shield Collision with enemy bullet
 		if (r.intersectsRect(enemybullet->getBoundingBox()) && shields[i]->getIsActive())
 		{
 			setEnemyBulletPosition();
@@ -226,7 +228,7 @@ void GameScene::checkCollisions()
 			if (shields[i]->getHealth() < 1)
 				shields[i]->disable();
 		}
-		//Collision with player bullet
+		//shield Collision with player bullet
 		if (r.intersectsRect(bullet->getBoundingBox()) && shields[i]->getIsActive())
 		{
 			bullet->disable();
@@ -294,6 +296,8 @@ void GameScene::updateEnemies(float dt)
 					if (enemies[i][j]->getPositionY() < player->getPositionY())
 					{
 						isEnemyBelowPlayer = true; //Game Over
+						player->explode();
+						playPlayerExplosionSFX();
 						gameState = GameState::GameOver;
 					}
 				}

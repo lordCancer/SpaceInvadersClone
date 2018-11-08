@@ -17,7 +17,8 @@ public:
 	void moveLeft(float delta);
 	//void createBullet(Layer *layer);
 	~Player();
-	void dead();
+	void explode();
+	void smallExplosion();
 	int getLives();
 	void setLives(int damage);
 
