@@ -44,7 +44,7 @@ void Bullet::moveUp(float delta)
 void Bullet::moveDown(float delta)
 {
 	Vec2 pos = this->getPosition();
-	pos.y -= BULLET_SPEED * delta;
+	pos.y -= ENEMY_BULLET_SPEED * delta;
 	setPosition(pos);
 }
 

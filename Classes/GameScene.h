@@ -6,9 +6,17 @@
 #include "Enemy.h"
 #include "Shield.h"
 #include "Definations.h"
+#include "MenuScene.h"
 
 USING_NS_CC;
 using namespace std;
+
+enum GameState
+{
+	GamePlay,
+	GameOver,
+	GameWin
+};
 
 class GameScene : public Scene
 {
@@ -26,6 +34,9 @@ private :
 	int score;
 	Label *scoreLabel;
 	Label *livesLabel;
+	Label *gameOverText;
+	GameState gameState;
+	float sceneTransitionInterval;
 
 	//Player control related variables
 	bool moveLeft;
@@ -55,6 +66,7 @@ private :
 	void setEnemyBulletPosition();
 	void updateScoreText();
 	void updateLivesText();
+	void loadMainMenu(float dt);
 
 	void keyPressed(EventKeyboard::KeyCode keyCode, Event* event);
 	void keyReleased(EventKeyboard::KeyCode keyCode, Event* event);

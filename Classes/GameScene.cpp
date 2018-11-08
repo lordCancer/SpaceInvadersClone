@@ -8,6 +8,8 @@ bool GameScene::init()
 	}
 	EventListenerKeyboard *keyboardListener;
 
+	gameState = GameState::GamePlay;
+	sceneTransitionInterval = 2.0f;
 	initPlayer();
 	initBullet();
 	initEnemies();
@@ -18,11 +20,15 @@ bool GameScene::init()
 
 	scoreLabel = Label::createWithTTF("SCORE: 00", "fonts/thin_pixel-7.ttf", 70);
 	scoreLabel->setPosition(SCREEN_SIZE.x * 0.12f, SCREEN_SIZE.y * 0.97f);
-	this->addChild(scoreLabel, 1);
+	this->addChild(scoreLabel, 10);
 
 	livesLabel = Label::createWithTTF("LIVES x " + to_string(player->getLives()), "fonts/thin_pixel-7.ttf", 70);
 	livesLabel->setPosition(SCREEN_SIZE.x * 0.86f, SCREEN_SIZE.y * 0.97f);
-	this->addChild(livesLabel, 1);
+	this->addChild(livesLabel, 10);
+	
+	gameOverText = Label::createWithTTF("", "fonts/thin_pixel-7.ttf", 150);
+	gameOverText->setPosition(SCREEN_MID.x, SCREEN_MID.y);
+	this->addChild(gameOverText, 10);
 
 	keyboardListener = EventListenerKeyboard::create();
 	keyboardListener->onKeyPressed = CC_CALLBACK_2(GameScene::keyPressed, this);
@@ -78,12 +84,29 @@ void GameScene::keyReleased(EventKeyboard::KeyCode keyCode, Event* event)
 void GameScene::update(float delta)
 {
 	Node::update(delta);
+	float elapsedTime = delta;
+	switch (gameState)
+	{
+	case GameState::GamePlay:
+		updateGamePlay(delta);
+		updateEnemies(delta);
+		checkCollisions();
+		break;
 
-	updateGamePlay(delta);
+	case GameState::GameOver:
+		gameOverText->setString("GAME OVER!");
+		loadMainMenu(delta);
+		break;
 
-	updateEnemies(delta);
+	case GameState::GameWin:
+		gameOverText->setString("YOU WIN!");
+		loadMainMenu(delta);
+		break;
 
-	checkCollisions();
+	default:
+		break;
+	}
+	
 }
 
 void GameScene::initPlayer()
@@ -157,7 +180,11 @@ void GameScene::checkCollisions()
 				updateScoreText();
 				totalEnemies--;
 				if (totalEnemies < 1)
+				{
 					log("YOU WIN!");
+					gameState = GameState::GameWin;
+				}
+
 				bullet->disable();
 				playerCanShoot = true;
 			}
@@ -177,7 +204,9 @@ void GameScene::checkCollisions()
 		updateLivesText();
 		if (player->getLives() <= 0)
 		{
+			player->setVisible(false);
 			log("GAME OVER!!");
+			gameState = GameState::GameOver;
 		}
 	}
 
@@ -260,6 +289,7 @@ void GameScene::updateEnemies(float dt)
 					if (enemies[i][j]->getPositionY() < player->getPositionY())
 					{
 						isEnemyBelowPlayer = true; //Game Over
+						gameState = GameState::GameOver;
 					}
 				}
 			}
@@ -344,4 +374,19 @@ void GameScene::updateLivesText()
 {
 	player->setLives(player->getLives() - 1);
 	livesLabel->setString("LIVES x " + to_string(player->getLives()));
+}
+
+void GameScene::loadMainMenu(float dt)
+{
+	//Load main menu after a delay
+	if (sceneTransitionInterval >= 0)
+	{
+		sceneTransitionInterval -= dt;
+		return;
+	}
+	else
+	{
+		Scene *menuScene = MenuScene::create();
+		Director::getInstance()->replaceScene(TransitionFade::create(0.1f, menuScene, Color3B(1.5f, 255, 255)));
+	}
 }
