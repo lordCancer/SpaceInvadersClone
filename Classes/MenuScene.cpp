@@ -14,13 +14,17 @@ bool MenuScene::init()
 	textLabel->setPosition(SCREEN_MID.x, SCREEN_SIZE.y * 0.59f);
 	this->addChild(textLabel, 1);
 
+	Label * instructionlbl = Label::createWithTTF("MOVEMENT: Arrow keys/A,D \nSHOOT: space", "fonts/thin_pixel-7.ttf", 50);
+	instructionlbl->setPosition(SCREEN_MID.x, SCREEN_SIZE.y * 0.2f);
+	this->addChild(instructionlbl, 1);
+
 	Button * playButton = Button::create("images/button.png", "images/button_pressed.png", "images/button_pressed.png");
 	playButton->setTitleText("START!");
 	playButton->setTitleFontName("fonts/thin_pixel-7.ttf");
 	playButton->setTitleFontSize(55.0f);
 	playButton->setTitleColor(Color3B(0, 0, 0));
 	playButton->setTitleAlignment(TextHAlignment::CENTER);
-	playButton->setPosition(Vec2(SCREEN_MID.x, SCREEN_SIZE.y * 0.45));
+	playButton->setPosition(Vec2(SCREEN_MID.x, SCREEN_SIZE.y * 0.35));
 	playButton->addTouchEventListener([&](Ref * sender, Widget::TouchEventType type)
 	{
 		switch (type)
