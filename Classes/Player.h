@@ -19,7 +19,7 @@ public:
 	~Player();
 	void dead();
 	int getLives();
-	void setLives(int lives);
+	void setLives(int damage);
 
 private:
 	int currentLives;

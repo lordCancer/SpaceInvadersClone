@@ -4,6 +4,7 @@
 #include"Player.h"
 #include "Bullet.h"
 #include "Enemy.h"
+#include "Shield.h"
 
 USING_NS_CC;
 using namespace std;
@@ -16,12 +17,12 @@ public:
 	virtual void update(float delta) override;
 	CREATE_FUNC(GameScene);
 	
-
 private :
 	Player * player;
 	Bullet * bullet;
 	Enemy *enemies[ENEMY_ROW_COUNT][ENEMY_COLUMN_COUNT];
 	Bullet *enemybullet;
+	vector<Shield *>shields;
 	int score;
 	Label *scoreLabel;
 	Label *livesLabel;
@@ -39,6 +40,7 @@ private :
 	bool isEnemyMoveDownPending;
 	float deltaX;
 	float deltaY;
+	int totalEnemies;
 
 	//Game scene functions
 	void initPlayer();
@@ -46,6 +48,7 @@ private :
 	void setPlayerBulletPosition();
 	void initEnemies();
 	void initEnemyBullet();
+	void initShields();
 	void updateGamePlay(float dt);
 	void checkCollisions();
 	void updateEnemies(float dt);
@@ -55,6 +58,5 @@ private :
 
 	void keyPressed(EventKeyboard::KeyCode keyCode, Event* event);
 	void keyReleased(EventKeyboard::KeyCode keyCode, Event* event);
-	//void setPhysicsWorld(PhysicsWorld *world);
 };
 

@@ -57,9 +57,9 @@ int Player::getLives()
 	return currentLives;
 }
 
-void Player::setLives(int lives)
+void Player::setLives(int damage)
 {
-	currentLives = lives;
+	currentLives = damage;
 }
 
 Player::~Player()

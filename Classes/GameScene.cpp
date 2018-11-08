@@ -21,8 +21,11 @@ bool GameScene::init()
 	initPlayer();
 	initBullet();
 	initEnemies();
+	initShields();
 
 	score = 0;
+	totalEnemies = TOTAL_ENEMY;
+
 	scoreLabel = Label::createWithTTF("SCORE: 00", "fonts/thin_pixel-7.ttf", 70);
 	scoreLabel->setPosition(SCREEN_SIZE.x * 0.12f, SCREEN_SIZE.y * 0.97f);
 	this->addChild(scoreLabel, 1);
@@ -41,11 +44,6 @@ bool GameScene::init()
 
 	return true;
 }
-
-//void GameScene::setPhysicsWorld(PhysicsWorld *world)
-//{
-//	physicsWorld = world;
-//}
 
 void GameScene::keyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 {
@@ -167,6 +165,9 @@ void GameScene::checkCollisions()
 			{
 				enemies[i][j]->disable();
 				updateScoreText();
+				totalEnemies--;
+				if (totalEnemies < 1)
+					log("YOU WIN!");
 				bullet->disable();
 				playerCanShoot = true;
 			}
@@ -187,6 +188,30 @@ void GameScene::checkCollisions()
 		if (player->getLives() <= 0)
 		{
 			log("GAME OVER!!");
+		}
+	}
+
+	//Shield collision detection with playerBullet and enemy bullets
+	for (int i = 0; i < (int)shields.size(); i++)
+	{
+		Rect r = shields[i]->getBoundingBox();
+		//Collision with enemy bullet
+		if (r.intersectsRect(enemybullet->getBoundingBox()) && shields[i]->getIsActive())
+		{
+			setEnemyBulletPosition();
+			shields[i]->setHealth(shields[i]->getHealth() - 1);
+			if (shields[i]->getHealth() < 1)
+				shields[i]->disable();
+		}
+		//Collision with player bullet
+		if (r.intersectsRect(bullet->getBoundingBox()) && shields[i]->getIsActive())
+		{
+			bullet->disable();
+			setPlayerBulletPosition();
+			playerCanShoot = true;
+			shields[i]->setHealth(shields[i]->getHealth() - 1);
+			if (shields[i]->getHealth() < 1)
+				shields[i]->disable();
 		}
 	}
 }
@@ -303,6 +328,20 @@ void GameScene::setEnemyBulletPosition() //sets the bullet positon to a random e
 		return;
 
 	enemybullet->setPosition(enemies[randomRowNum][randomColumnNum]->getPosition());
+}
+
+void GameScene::initShields()
+{
+	Shield *s;
+	float xValue = 0.25f;
+	for (int i = 0; i < SHIELD_TOTAL; i++)
+	{
+		s = Shield::create("images/shield.png");
+		s->setPosition(Vec2(SCREEN_SIZE.x * xValue, SCREEN_SIZE.y * 0.28f));
+		addChild(s, 5);
+		shields.push_back(s);
+		xValue += 0.25f;
+	}
 }
 
 void GameScene::updateScoreText()
