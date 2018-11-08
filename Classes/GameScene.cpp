@@ -1,18 +1,8 @@
 #include "GameScene.h"
 
-Scene* GameScene::createScene()
-{
-	auto scene = Scene::create();
-	auto layer = GameScene::create();
-
-	scene->addChild(layer);
-
-	return scene;
-}
-
 bool GameScene::init()
 {
-	if (!Layer::init())
+	if (!Scene::init())
 	{
 		return false;
 	}
@@ -313,7 +303,7 @@ void GameScene::initEnemyBullet()
 {
 	enemybullet = Bullet::create("images/bullet.png");
 	enemybullet->setIsEnemyBullet(true);
-	enemybullet->setColor(ccc3(255, 215, 0));//gold color
+	enemybullet->setColor(Color3B(255, 215, 0));//gold color
 	addChild(enemybullet, 5);
 	setEnemyBulletPosition();
 	enemybullet->enable();

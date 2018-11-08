@@ -24,6 +24,7 @@
 
 #include "AppDelegate.h"
 #include "GameScene.h"
+#include "MenuScene.h"
 
 USING_NS_CC;
 
@@ -36,9 +37,9 @@ AppDelegate::~AppDelegate()
 }
 
 bool AppDelegate::applicationDidFinishLaunching() {
-	auto director = Director::getInstance();
+	Director* director = Director::getInstance();
 
-	auto glview = director->getOpenGLView();
+	GLView* glview = director->getOpenGLView();
 	if (!glview) {
 		glview = GLViewImpl::create("Space Invaders");
 		glview->setDesignResolutionSize(DESIGN_RESOLUTION, ResolutionPolicy::SHOW_ALL);
@@ -51,8 +52,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	screenMid.x = screenSize.x / 2;
 	screenMid.y = screenSize.y / 2;
 
-	auto scene = GameScene::createScene();
-	director->runWithScene(scene);
+	Scene *menuScene = MenuScene::create();
+	director->runWithScene(menuScene);
 	return true;
 }
 

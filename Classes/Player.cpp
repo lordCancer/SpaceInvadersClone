@@ -2,8 +2,7 @@
 
 Player* Player::create(string imgName)
 {
-	Player *p;
-	p = new Player();
+	Player *p = new Player();
 
 	if (p && p->initWithFile(imgName))
 	{
