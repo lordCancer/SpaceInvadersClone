@@ -21,5 +21,7 @@ public:
 private:
 	void loadGameScene();
 	SoundManager *soundManager;
+	void playButtonSound();
 	int menuMusicId;
+	int btnSoundId;
 };

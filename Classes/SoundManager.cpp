@@ -39,6 +39,11 @@ void SoundManager::Stop(int soundId)
 	AudioEngine::stop(soundId);
 }
 
+void SoundManager::StopAll()
+{
+	AudioEngine::stopAll();
+}
+
 SoundManager::~SoundManager()
 {
 

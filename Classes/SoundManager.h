@@ -16,5 +16,6 @@ public:
 	void Pause(int soundId);
 	void Resume(int soundId);
 	void Stop(int soundId);
+	void StopAll();
 	~SoundManager();
 };

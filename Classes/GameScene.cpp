@@ -7,9 +7,10 @@ bool GameScene::init()
 		return false;
 	}
 	EventListenerKeyboard *keyboardListener;
+	soundManager = new SoundManager();
 
 	gameState = GameState::GamePlay;
-	sceneTransitionInterval = 2.0f;
+	sceneTransitionInterval = 3.8f;
 	initPlayer();
 	initBullet();
 	initEnemies();
@@ -176,11 +177,13 @@ void GameScene::checkCollisions()
 			if (enemies[i][j]->alive() && r.intersectsRect(bullet->getBoundingBox()))
 			{
 				enemies[i][j]->disable();
+				playInvaderHitSFX();
 				updateScoreText();
 				totalEnemies--;
 				if (totalEnemies < 1)
 				{
 					log("YOU WIN!");
+					PlayGameWinSFX();
 					gameState = GameState::GameWin;
 				}
 
@@ -200,11 +203,13 @@ void GameScene::checkCollisions()
 	if (r.intersectsRect(enemybullet->getBoundingBox()))
 	{
 		setEnemyBulletPosition();
+		playPlayerExplosionSFX();
 		updateLivesText();
 		if (player->getLives() <= 0)
 		{
 			player->setVisible(false);
 			log("GAME OVER!!");
+			PlayGameOverSFX();
 			gameState = GameState::GameOver;
 		}
 	}
@@ -252,6 +257,7 @@ void GameScene::updateGamePlay(float dt)
 		playerCanShoot = false;
 		setPlayerBulletPosition();//we set the bullet positions to players position before we fire the bullet
 		bullet->enable();
+		playShootSFX();
 	}
 
 	//If the bullet goes out of screen do this
@@ -315,7 +321,6 @@ void GameScene::updateEnemies(float dt)
 							return;
 						rightMostEnemy = enemies[i][j];
 					}
-
 				}
 			}
 			if (rightMostEnemy->getPosition().x  > SCREEN_SIZE.x * 0.95f || leftMostEnemy->getPosition().x < SCREEN_SIZE.x * 0.05f)
@@ -347,6 +352,7 @@ void GameScene::setEnemyBulletPosition() //sets the bullet positon to a random e
 		return;
 
 	enemybullet->setPosition(enemies[randomRowNum][randomColumnNum]->getPosition());
+	playEnemyShootSFX();
 }
 
 void GameScene::initShields()
@@ -385,7 +391,57 @@ void GameScene::loadMainMenu(float dt)
 	}
 	else
 	{
+		delete soundManager;
 		Scene *menuScene = MenuScene::create();
-		Director::getInstance()->replaceScene(TransitionFade::create(0.1f, menuScene, Color3B(1.5f, 255, 255)));
+		Director::getInstance()->replaceScene(menuScene);
 	}
+}
+
+void GameScene::onEnterTransitionDidFinish()
+{
+	gamePlayMusicId = soundManager->Play("sounds/gameplay.mp3", true);
+	soundManager->setVolume(gamePlayMusicId, 0.35f);
+}
+
+void GameScene::onExitTransitionDidStart()
+{
+	soundManager->StopAll();
+}
+
+void GameScene::playShootSFX()
+{
+	int shootSFXId = soundManager->Play("sounds/shoot.mp3", false);
+	soundManager->setVolume(shootSFXId, 0.6f);
+}
+
+void GameScene::playInvaderHitSFX()
+{
+	int invaderHitSFX = soundManager->Play("sounds/invaderkilled.mp3",false);
+	soundManager->setVolume(invaderHitSFX, 0.6f);
+}
+
+void GameScene::playEnemyShootSFX()
+{
+	int enemyShootSFX = soundManager->Play("sounds/enemyshoot.mp3",false);
+	soundManager->setVolume(enemyShootSFX, 0.6f);
+}
+
+void GameScene::playPlayerExplosionSFX()
+{
+	int playerExplosionSFX = soundManager->Play("sounds/explosion.mp3",false);
+	soundManager->setVolume(playerExplosionSFX, 0.6f);
+}
+
+void GameScene::PlayGameOverSFX()
+{
+	soundManager->Stop(gamePlayMusicId);
+	int gameOverSFX = soundManager->Play("sounds/gameover.mp3", false);
+	soundManager->setVolume(gameOverSFX, 0.6f);
+}
+
+void GameScene::PlayGameWinSFX()
+{
+	soundManager->Stop(gamePlayMusicId);
+	int gameWinSFX = soundManager->Play("sounds/levelclear.mp3", false);
+	soundManager->setVolume(gameWinSFX, 0.6f);
 }

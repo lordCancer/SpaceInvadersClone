@@ -7,6 +7,7 @@
 #include "Shield.h"
 #include "Definations.h"
 #include "MenuScene.h"
+#include "SoundManager.h"
 
 USING_NS_CC;
 using namespace std;
@@ -67,6 +68,18 @@ private :
 	void updateScoreText();
 	void updateLivesText();
 	void loadMainMenu(float dt);
+	void onEnterTransitionDidFinish();
+	void onExitTransitionDidStart();
+
+	//sound variables and functions
+	SoundManager *soundManager;
+	int gamePlayMusicId;
+	void playShootSFX();
+	void playInvaderHitSFX();
+	void playEnemyShootSFX();
+	void playPlayerExplosionSFX();
+	void PlayGameOverSFX();
+	void PlayGameWinSFX();
 
 	void keyPressed(EventKeyboard::KeyCode keyCode, Event* event);
 	void keyReleased(EventKeyboard::KeyCode keyCode, Event* event);

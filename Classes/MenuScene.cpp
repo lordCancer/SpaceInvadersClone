@@ -32,7 +32,7 @@ bool MenuScene::init()
 		switch (type)
 		{
 		case Widget::TouchEventType::ENDED:
-			soundManager->Play("sounds/buttonsound.mp3", false);
+			playButtonSound();
 			loadGameScene();
 			break;
 		default:
@@ -46,6 +46,7 @@ bool MenuScene::init()
 
 void MenuScene::onEnterTransitionDidFinish()
 {
+	//Play Background music
 	menuMusicId = soundManager->Play("sounds/menu.mp3", true);
 	soundManager->setVolume(menuMusicId, 0.2f);
 }
@@ -57,7 +58,13 @@ void MenuScene::onExitTransitionDidStart()
 
 void MenuScene::loadGameScene()
 {
-	//delete soundManager;
 	Scene *gameScene = GameScene::create();
 	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, gameScene, Color3B(0, 255, 255)));
+	delete soundManager;
+}
+
+void MenuScene::playButtonSound()
+{
+	btnSoundId = soundManager->Play("sounds/button.mp3", false);
+	soundManager->setVolume(btnSoundId, 1.0f);
 }
