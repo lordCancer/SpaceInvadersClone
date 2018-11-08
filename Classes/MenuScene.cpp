@@ -5,6 +5,8 @@ bool MenuScene::init()
 	if (!Scene::init())
 		return false;
 
+	soundManager = new SoundManager();
+
 	Sprite * logoImg = Sprite::create("images/logo.png");
 	logoImg->setPosition(Vec2(SCREEN_MID.x, SCREEN_SIZE.y *0.8));
 	logoImg->setScale(2.0f);
@@ -30,6 +32,7 @@ bool MenuScene::init()
 		switch (type)
 		{
 		case Widget::TouchEventType::ENDED:
+			soundManager->Play("sounds/buttonsound.mp3", false);
 			loadGameScene();
 			break;
 		default:
@@ -41,8 +44,20 @@ bool MenuScene::init()
 	return true;
 }
 
+void MenuScene::onEnterTransitionDidFinish()
+{
+	menuMusicId = soundManager->Play("sounds/menu.mp3", true);
+	soundManager->setVolume(menuMusicId, 0.2f);
+}
+
+void MenuScene::onExitTransitionDidStart()
+{
+	soundManager->Stop(menuMusicId);
+}
+
 void MenuScene::loadGameScene()
 {
+	//delete soundManager;
 	Scene *gameScene = GameScene::create();
 	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, gameScene, Color3B(0, 255, 255)));
 }

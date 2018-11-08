@@ -106,7 +106,6 @@ void GameScene::update(float delta)
 	default:
 		break;
 	}
-	
 }
 
 void GameScene::initPlayer()
