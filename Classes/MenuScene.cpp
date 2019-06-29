@@ -60,7 +60,7 @@ void MenuScene::loadGameScene()
 {
 	Scene *gameScene = GameScene::create();
 	Director::getInstance()->replaceScene(TransitionFade::create(0.5f, gameScene, Color3B(0, 255, 255)));
-	delete soundManager;
+	//delete soundManager;
 }
 
 void MenuScene::playButtonSound()
